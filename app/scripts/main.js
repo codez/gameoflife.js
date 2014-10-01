@@ -62,9 +62,18 @@ $(function() {
     	var _this = this;
     	$(window).resize(function() {   });
 
-	    $(document).on('click', '#world td', function() {
-	    	_this.toggleCell(this);
-	    });
+	    (function() {
+	    	var activate = undefined;
+	    	$(document).on('mousedown', '#world td', function(event) {
+	    		activate = _this.toggleCell(this);
+	    	}).on('mouseup', function(event) {
+	    		activate = undefined;
+	    	}).on('mouseenter', '#world td', function(event) {
+	    		if (activate != undefined) {
+	    		  _this.toggleCell(this, activate);
+	    		}
+	    	});
+	    })();
 
 	    $(document).on('cell.update', '#world td', function(event, state) {
 	    	if (state) { $(this).addClass('on'); }
@@ -87,12 +96,17 @@ $(function() {
 	    })
     };
 
-    GameOfLife.prototype.toggleCell = function(cell) {
+    GameOfLife.prototype.toggleCell = function(cell, state) {
     	var $cell = $(cell);
     	var x = $cell.data('x');
     	var y = $cell.data('y');
-    	this.cells[y][x] = !this.cells[y][x];
+    	if (state === undefined) {
+    		this.cells[y][x] = !this.cells[y][x];
+	    } else {
+	    	this.cells[y][x] = state;
+	    }
     	$cell.trigger('cell.update', [this.cells[y][x]]);
+    	return this.cells[y][x];
     };
 
 	GameOfLife.prototype.start = function() {
