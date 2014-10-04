@@ -9,8 +9,9 @@
 		var cells = [];
         var countX = 0, countY = 0;
         var runner = null;
+        var that = this;
 
-        this.init = function(_countX, _countY) {
+        this.setDimension = function(_countX, _countY) {
             // add new rows
             for (var y = countY; y < _countY; y++) {
                 cells[y] = [];
@@ -40,7 +41,7 @@
     	    } else {
     	    	cells[y][x] = state;
     	    }
-        	//$cell.trigger('cell.update', [cells[y][x]]);
+        	$(this).trigger('cell.update', [x, y, cells[y][x]]);
         	return cells[y][x];
         };
 
@@ -76,30 +77,21 @@
     	};
 
     	this.step = function() {
+            //var start = new Date().getTime();
     		var result = [];
     		this.iterateCells(
     			function(x, y) { computeResultCell(result, x, y); },
     			function(y) { result[y] = []; });
 
     	    cells = result;
+            //var stop = new Date().getTime();
+            //console.log('step took ' + (stop - start));
     	};
 
     	var computeResultCell = function(result, x, y) {
     		var count = countNeighbours(x, y);
-
-            if (count === 3) {
-            	result[y][x] = true;
-            	if (!cells[y][x]) {
-            		$('#' + x + '_' + y).trigger('cell.update', [true]);
-            	}
-            } else if (count === 4) {
-            	result[y][x] = cells[y][x];
-            } else {
-            	result[y][x] = false;
-            	if (cells[y][x]) {
-            		$('#' + x + '_' + y).trigger('cell.update', [false]);
-            	}
-            }
+            var newState = computeNewState(x, y, count);
+            setResultCell(result, x, y, newState);
     	};
 
     	var countNeighbours = function(x, y) {
@@ -125,6 +117,23 @@
             if (x >= countX) { x = 0; }
 
             return cells[y][x];
+        };
+
+        var computeNewState = function(x, y, count) {
+            if (count === 3) {
+                return true;
+            } else if (count === 4) {
+                return cells[y][x];
+            } else {
+                return false;
+            }
+        };
+
+        var setResultCell = function(result, x, y, state) {
+            result[y][x] = state;
+            if (state !== cells[y][x]) {
+                $(that).trigger('cell.update', [x, y, state]);
+            }
         };
     }
 

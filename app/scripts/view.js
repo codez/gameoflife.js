@@ -8,23 +8,20 @@
 		var init = function() {
 			var dimensions = measureWorld();
 			if (model.getCountX() !== dimensions[0] ||
-				model.getCountY !== dimensions[1]) {
-			    model.init(dimensions[0], dimensions[1]);
+				model.getCountY() !== dimensions[1]) {
+			    model.setDimension(dimensions[0], dimensions[1]);
 				createWorld();
 			}
 		};
 
 		var measureWorld = function() {
-			var totalHeight = $(window).innerHeight() - $('#header').outerHeight();
+			var totalHeight = $(window).innerHeight() -
+			                  $('#header').outerHeight();
 			var totalWidth = $('#world').innerWidth();
 			var countX = Math.round(totalWidth / gridSize);
 			var countY = Math.round(totalHeight / gridSize);
 
-			console.log('world is ' + totalWidth + 'x' + totalHeight);
-			console.log('create ' + countX + 'x' + countY + ' cells');
-
 		    $('#world').css({ height: totalHeight });
-
 		   	return [countX, countY];
 		};
 
@@ -38,13 +35,11 @@
 		};
 
 		var createCell = function(x, y) {
-			var td = '<td id="' + x + '_' + y +
-				       '" data-x="' + x +
-				       '" data-y="' + y + '"';
+			var td = '<td id="cell_' + x + '_' + y + '"';
 			if (model.isActive(x, y)) {
 				td += ' class="on"';
 			}
-			td += '></td>';
+			td += '> </td>';
 			return td;
 		};
 
@@ -56,17 +51,14 @@
 		};
 
 		var toggleCell = function(cell, state) {
-			var $cell = $(cell);
-			var x = $cell.data('x');
-			var y = $cell.data('y');
-			var newState = model.toggleCell(x, y, state);
-			updateCell(cell, newState);
-			return newState;
+			var match = /^cell_(\d+)_(\d+)$/.exec(cell.id);
+			return model.toggleCell(match[1], match[2], state);
 		};
 
-		var updateCell = function(cell, state) {
-			if (state) { $(cell).addClass('on'); }
-		    else { $(cell).removeClass('on'); }
+		var updateCell = function(x, y, state) {
+			var cell = $('#cell_' + x + '_' + y);
+			if (state) { cell.addClass('on'); }
+		    else { cell.removeClass('on'); }
 		};
 
 		var registerCellDrawEvents = function() {
@@ -83,8 +75,8 @@
 	    };
 
 	    var registerCellUpdateEvent = function() {
-	    	$(document).on('cell.update', '#world td', function(event, state) {
-		    	updateCell(this, state);
+	    	$(model).on('cell.update', function(event, x, y, state) {
+		    	updateCell(x, y, state);
 		    });
 	    };
 
