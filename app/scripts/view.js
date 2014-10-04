@@ -5,10 +5,13 @@
 		var gridSize = 10;
 		var model = new window.GameOfLife.Model();
 
-		this.init = function() {
-			measureWorld();
-			initWorld();
-			initEventHandlers();
+		var init = function() {
+			var dimensions = measureWorld();
+			if (model.getCountX() !== dimensions[0] ||
+				model.getCountY !== dimensions[1]) {
+			    model.init(dimensions[0], dimensions[1]);
+				createWorld();
+			}
 		};
 
 		var measureWorld = function() {
@@ -21,21 +24,35 @@
 			console.log('create ' + countX + 'x' + countY + ' cells');
 
 		    $('#world').css({ height: totalHeight });
-		    model.init(countX, countY);
+
+		   	return [countX, countY];
 		};
 
-		var initWorld = function() {
-			var row;
+		var createWorld = function() {
+			var grid = '<tr>';
 			model.iterateCells(
-				function(x, y) {
-					row.append('<td id="' + x + '_' + y +
-						       '" data-x="' + x +
-						       '" data-y="' + y + '"></td>');
-				},
-				function() {
-					$('#world table tbody').append('<tr></tr>');
-					row = $('#world table tbody tr:last-child');
-				});
+				function(x, y) { grid += createCell(x, y); },
+				function() { grid = appendRow(grid); });
+			grid += '</tr>';
+			$('#world table tbody').html(grid);
+		};
+
+		var createCell = function(x, y) {
+			var td = '<td id="' + x + '_' + y +
+				       '" data-x="' + x +
+				       '" data-y="' + y + '"';
+			if (model.isActive(x, y)) {
+				td += ' class="on"';
+			}
+			td += '></td>';
+			return td;
+		};
+
+		var appendRow = function(grid) {
+			if (grid !== '<tr>') {
+				grid += '</tr></tr>';
+			}
+			return grid;
 		};
 
 		var toggleCell = function(cell, state) {
@@ -91,7 +108,9 @@
 	    };
 
 	    var registerResizeEvent = function() {
-	    	$(window).resize(function() {   });
+	    	$(window).resize(function() {
+	    		init();
+	    	});
 	    };
 
 		var initEventHandlers = function() {
@@ -102,7 +121,8 @@
 		    registerResizeEvent();
 		};
 
-		this.init();
+		init();
+		initEventHandlers();
     }
 
     window.GameOfLife.View = View;

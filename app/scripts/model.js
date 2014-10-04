@@ -11,12 +11,18 @@
         var runner = null;
 
         this.init = function(_countX, _countY) {
+            // add new rows
+            for (var y = countY; y < _countY; y++) {
+                cells[y] = [];
+            }
+            // add new columns for all rows
+            for (y = 0; y < _countY; y++) {
+                for (var x = countX; x < countX; x++) {
+                    cells[y][x] = false;
+                }
+            }
         	countX = _countX;
         	countY = _countY;
-
-        	this.iterateCells(
-        		function(x,y) { cells[y][x] = false; },
-        		function(y) { cells[y] = []; });
         };
 
         this.iterateCells = function(cellCallback, rowCallback) {
@@ -36,6 +42,18 @@
     	    }
         	//$cell.trigger('cell.update', [cells[y][x]]);
         	return cells[y][x];
+        };
+
+        this.getCountX = function() {
+            return countX;
+        };
+
+        this.getCountY = function() {
+            return countY;
+        };
+
+        this.isActive = function(x, y) {
+            return isActive(x, y);
         };
 
     	this.start = function() {
@@ -100,15 +118,14 @@
             return amount;
     	};
 
-    	var isActive = function(x, y) {
-    		if (y < 0)       { y = countY - 1; }
-    	    if (y >= countY) { y = 0; }
-    		if (x < 0)       { x = countX - 1; }
-    	    if (x >= countX) { x = 0; }
+        var isActive = function(x, y) {
+            if (y < 0)       { y = countY - 1; }
+            if (y >= countY) { y = 0; }
+            if (x < 0)       { x = countX - 1; }
+            if (x >= countX) { x = 0; }
 
             return cells[y][x];
         };
-
     }
 
     window.GameOfLife = {
