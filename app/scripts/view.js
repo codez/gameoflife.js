@@ -26,12 +26,12 @@
 		};
 
 		var createWorld = function() {
-			var grid = '<tr>';
+			var grid = '<table><tbody><tr>';
 			model.iterateCells(
 				function(x, y) { grid += createCell(x, y); },
 				function() { grid = appendRow(grid); });
-			grid += '</tr>';
-			$('#world table tbody').html(grid);
+			grid += '</tr></tbody></table>';
+			$('#world').html(grid);
 		};
 
 		var createCell = function(x, y) {
@@ -44,7 +44,7 @@
 		};
 
 		var appendRow = function(grid) {
-			if (grid !== '<tr>') {
+			if (grid !== '<table><tbody><tr>') {
 				grid += '</tr></tr>';
 			}
 			return grid;

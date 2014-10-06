@@ -13,29 +13,25 @@
 
         this.setDimension = function(_countX, _countY) {
             // add new rows
-            for (var y = countY; y < _countY; y++) {
-                cells[y] = [];
-            }
-            // add new columns for all rows
-            for (y = 0; y < _countY; y++) {
-                for (var x = countX; x < countX; x++) {
-                    cells[y][x] = false;
-                }
-            }
+            initCells(countY, _countY, 0, _countX);
+            // add new columns
+            initCells(0, _countY, countX, _countX);
+
         	countX = _countX;
         	countY = _countY;
         };
 
         this.iterateCells = function(cellCallback, rowCallback) {
         	for (var y = 0; y < countY; y++) {
-        		if (rowCallback) { rowCallback.apply(this, [y]); }
+        		if (rowCallback) { rowCallback(y); }
         		for (var x = 0; x < countX; x++) {
-        			cellCallback.apply(this, [x, y]);
+        			cellCallback(x, y);
         		}
         	}
         };
 
         this.toggleCell = function(x, y, state) {
+            checkBounds(x, y);
         	if (state === undefined) {
         		cells[y][x] = !cells[y][x];
     	    } else {
@@ -54,7 +50,8 @@
         };
 
         this.isActive = function(x, y) {
-            return isActive(x, y);
+            checkBounds(x, y);
+            return cells[y][x];
         };
 
     	this.start = function() {
@@ -87,6 +84,15 @@
             //var stop = new Date().getTime();
             //console.log('step took ' + (stop - start));
     	};
+
+        var initCells = function(startY, endY, startX, endX) {
+            for (var y = startY; y < endY; y++) {
+                if (!cells[y]) { cells[y] = [] };
+                for (var x = startX; x < endX; x++) {
+                    cells[y][x] = false;
+                }
+            }
+        };
 
     	var computeResultCell = function(result, x, y) {
     		var count = countNeighbours(x, y);
@@ -135,6 +141,13 @@
                 $(that).trigger('cell.update', [x, y, state]);
             }
         };
+
+        var checkBounds = function(x, y) {
+            if (x < 0 || y < 0 || x >= countX || y >= countY) {
+                throw new RangeError('values ' + x + '/' + y +
+                                     ' are out of bounds');
+            }
+        }
     }
 
     window.GameOfLife = {

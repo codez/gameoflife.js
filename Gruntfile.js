@@ -45,6 +45,9 @@ module.exports = function (grunt) {
         files: ['test/spec/{,*/}*.js'],
         tasks: ['test:watch']
       },
+      test: {
+        files: ['test/spec/{,*/}*.js']
+      },
       gruntfile: {
         files: ['Gruntfile.js']
       },
