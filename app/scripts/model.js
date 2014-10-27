@@ -1,6 +1,6 @@
 // immediate function for private scope
 // only functions added to prototype will be public.
-(function() {
+(function($) {
 
     'use strict';
 
@@ -11,14 +11,20 @@
         var runner = null;
         var that = this;
 
-        this.setDimension = function(_countX, _countY) {
-            // add new rows
-            initCells(countY, _countY, 0, _countX);
-            // add new columns
-            initCells(0, _countY, countX, _countX);
+        this.clear = function() {
+            this.iterateCells(function(x, y) {
+                that.toggleCell(x, y, false);
+            });
+        };
 
-        	countX = _countX;
-        	countY = _countY;
+        this.setDimension = function(newCountX, newCountY) {
+            // add new rows
+            initCells(countY, newCountY, 0, newCountX);
+            // add new columns
+            initCells(0, newCountY, countX, newCountX);
+
+        	countX = newCountX;
+        	countY = newCountY;
         };
 
         this.iterateCells = function(cellCallback, rowCallback) {
@@ -87,7 +93,7 @@
 
         var initCells = function(startY, endY, startX, endX) {
             for (var y = startY; y < endY; y++) {
-                if (!cells[y]) { cells[y] = [] };
+                if (!cells[y]) { cells[y] = []; }
                 for (var x = startX; x < endX; x++) {
                     cells[y][x] = false;
                 }
@@ -147,7 +153,7 @@
                 throw new RangeError('values ' + x + '/' + y +
                                      ' are out of bounds');
             }
-        }
+        };
     }
 
     window.GameOfLife = {
@@ -155,4 +161,4 @@
     };
 
 
-})(); // immediate function
+})(jQuery); // immediate function

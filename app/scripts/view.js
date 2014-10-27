@@ -1,9 +1,9 @@
-(function() {
+(function($) {
 	'use strict';
 
 	function View() {
 		var gridSize = 10;
-		var model = new window.GameOfLife.Model();
+		var model = this.model = new window.GameOfLife.Model();
 
 		var init = function() {
 			var dimensions = measureWorld();
@@ -89,14 +89,19 @@
 	    var registerStartStopEvent = function() {
 	    	$(document).on('click', '#starter', function() {
 		    	if (model.isRunning()) {
-		    	   model.stop();
-		    	   $(this).html('Start');
-		        }
-		    	else {
+		    		model.stop();
+		    		$(this).html('Start');
+		        } else {
 		    		model.start();
 		    		$(this).html('Stop');
 		    	}
 		    });
+	    };
+
+	    var registerClearEvent = function() {
+	    	$(document).on('click', '#cleaner', function() {
+	    		model.clear();
+	    	});
 	    };
 
 	    var registerResizeEvent = function() {
@@ -110,6 +115,7 @@
 		    registerCellUpdateEvent();
 		    registerStartStopEvent();
 		    registerStepEvent();
+		    registerClearEvent();
 		    registerResizeEvent();
 		};
 
@@ -119,4 +125,4 @@
 
     window.GameOfLife.View = View;
 
-})();
+})(jQuery);

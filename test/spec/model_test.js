@@ -48,7 +48,7 @@
     		var result = model.toggleCell(2, 1);
     		expect(result).to.be.true;
     		expect(model.isActive(2, 1)).to.be.true;
-    		var result = model.toggleCell(2, 1);
+    		result = model.toggleCell(2, 1);
     		expect(result).to.be.false;
     		expect(model.isActive(2, 1)).to.be.false;
     	});
@@ -68,7 +68,7 @@
     	it('iterates in shrinked dimensions', function() {
     		var rowCount = 0,
     		    cellCount = 0;
-    		model.setDimension(3, 2)
+    		model.setDimension(3, 2);
     		model.iterateCells(function() { cellCount++; },
     			               function() { rowCount++; });
     		expect(rowCount).to.eq(2);
@@ -82,14 +82,14 @@
     	});
 
     	it('throws error when out of scope', function() {
-    		var fn = function() { model.isActive(15, 10) };
+    		var fn = function() { model.isActive(15, 10); };
     		expect(fn).to.throw(RangeError);
     	});
 
     	it('throws error when out of scope after shrink', function() {
     		expect(model.isActive(10, 5)).to.be.false;
     		model.setDimension(10, 5);
-    		var fn = function() { model.isActive(15, 10) };
+    		var fn = function() { model.isActive(15, 10); };
     		expect(fn).to.throw(RangeError);
     	});
     });
@@ -115,12 +115,12 @@
     		model.iterateCells(function(x, y) {
     			var active = false;
     			for (var i = 0; i < cells.length; i++) {
-    				if (cells[i][0] == x && cells[i][1] == y) {
+    				if (cells[i][0] === x && cells[i][1] === y) {
     					active = true;
     					break;
     				}
     			}
-    			var msg =  x + '/' + y + ' should be ' + active
+    			var msg =  x + '/' + y + ' should be ' + active;
     			expect(model.isActive(x, y), msg).to.eq(active);
     		});
     	};
